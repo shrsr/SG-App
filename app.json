@@ -1,0 +1,28 @@
+{
+    "apicversion":"2.2(1n)",
+    "appid":"SGApp",
+    "author":"SHR",
+    "category":[
+        "Visibility and Monitoring"
+    ],
+    "contact":{
+        "contact-email":"aciappcenter-support@cisco.com",
+        "contact-phone":"0000000000",
+        "contact-url":"http://www.cisco.com/go/aci/"
+    },
+    "contributors":[
+        ""
+    ],
+    "iconfile":"icon.png",
+    "insertionURL":"fv:infoTenant:center",
+    "metaversion":"1.1",
+    "name":"SGApp",
+    "permissions":[
+        "admin"
+    ],
+    "permissionslevel":"read",
+    "shortdescr":"My first ACI app",
+    "vendor":"Cisco",
+    "vendordomain":"Cisco",
+    "version":"0.1"
+}
