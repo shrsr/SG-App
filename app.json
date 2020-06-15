@@ -1,7 +1,7 @@
 {
     "apicversion":"2.2(1n)",
     "appid":"SGApp",
-    "author":"SHR",
+    "author":"Shreyas Srish",
     "category":[
         "Visibility and Monitoring"
     ],
@@ -11,17 +11,17 @@
         "contact-url":"http://www.cisco.com/go/aci/"
     },
     "contributors":[
-        ""
+        "Lionel Hercot"
     ],
     "iconfile":"icon.png",
-    "insertionURL":"fv:infoTenant:center",
+    "insertionURL":"",
     "metaversion":"1.1",
-    "name":"SGApp",
+    "name":"SG-App",
     "permissions":[
         "admin"
     ],
     "permissionslevel":"read",
-    "shortdescr":"My first ACI app",
+    "shortdescr":"Shows the service graph based on the configuration defined on APIC",
     "vendor":"Cisco",
     "vendordomain":"Cisco",
     "version":"0.1"

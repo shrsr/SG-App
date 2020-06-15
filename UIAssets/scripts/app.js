@@ -1,5 +1,5 @@
-window.ADDRESS = "https://172.31.187.150";
-window.ENTRY_POINT = "https://" + "172.31.187.150";
+window.ADDRESS = "https://172.31.184.12";
+window.ENTRY_POINT = "https://" + "172.31.184.12";
 //POST
 $.extend({
  xResponse: function() {
@@ -15,7 +15,7 @@ $.extend({
         aaaUser: {
           attributes: {
             name: "admin",
-            pwd: "uns3965!"
+            pwd: "ins3965!"
           }
         }
       }),
@@ -38,7 +38,7 @@ $.extend({
       var x = null;
       $.ajax({
         type: "GET",
-        url: "https://172.31.187.150/" + ul,
+        url: "https://172.31.184.12/" + ul,
         async: false,
         timeout: 0,
         headers: {
@@ -55,5 +55,7 @@ $.extend({
     }
   }
 });
+
+
 
 

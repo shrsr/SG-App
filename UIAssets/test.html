@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="go.js"></script>
+
+
+    
+     <script>
+     function init() {
+         var $ = go.GraphObject.make;
+         myDiagaram=$(go.Diagaram,"myDiagramDiv");
+         var nodeDataArray=[
+             {key : "Alpha", color:"lime"},
+             {key: "Beta", color:"cyan"}
+
+         ];
+         var linkDataArray = [
+         {to: "Beta", from:"Alpha"},
+
+         ];
+         myDiagram.model= new go.GraphLinksModel(nodeDataArray,linkDataArray);
+         myDiagram.nodeTemplate=
+         $(go.Node,"Auto",
+         $(go.shape,"RoundRectangle",{fill:"white"},
+         new go.Binding("fill","color")
+         ),
+         $(go.TextBlock, "text",{margin:10},
+            new go.Binding("text","key")
+         )
+         );
+         myDiagaram.linkTemplate=
+         $(go.Link,
+         $(go.Shape, {strokeWidth: 3},
+         new.goBinding("stroke","color")
+         ),
+         $(go.Shape,{toArrow: "Standard",stroke:null},
+         new go.Binding("fill","color")
+         )
+         );
+     }
+     </script>
+     </head>
+     <body onload="init()">
+     <div id="myDiagramDiv"></div>
+     </div>
+     </body></html>

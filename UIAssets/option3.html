@@ -13,6 +13,7 @@
         
         <link rel="stylesheet" href="css/cui-standard.min.css">
         <script src="scripts/jquery-3.1.1.min.js"></script>
+        <script src="scripts/popup.js"></script>
        <script type='text/javascript' src='scripts/app.js'></script>
         <style>
           
@@ -79,7 +80,7 @@
          font-size: 1.0em;
        }      
 
-
+       
 
 
 </style>
@@ -94,7 +95,7 @@
         <div class="container-fluid">
             <div class="header-panels">
                 <div class="header-panel hidden-md-down">
-                    <a class="header__logo" href="http://www.cisco.com" target="_blank">
+                    <a class="header__logo" href="app.html" target="_blank">
                         <span class="icon-cisco"></span>
                     </a>
                     <h1 class="header__title">
@@ -121,13 +122,13 @@
            
        
                
-            <select id="ddl1" onchange="configureDDL2(this, document.getElementById('ddl2'), document.getElementById('ddl3'))">
+            <select id="ddl1" onchange="createL3OutSelect(this.value)">
                     
                       <option value="">Pick Tenant</option>
                      
               <script>      
            var menuData={}
-            var extEPG=$.xResponse('/api/node/class/l3extInstP.json')
+            var extEPG=$.xResponse('api/node/class/l3extInstP.json')
             for (var z=0;z<extEPG.imdata.length;z++) {
               var extract=extEPG.imdata[z].l3extInstP.attributes.dn.split("/")
               var l3Ten = extract[1].replace("tn-","")
@@ -153,52 +154,101 @@
 
                 s+="<option>"+tenants[c].toString()+"</option>"
             }
-            document.write(s)
-                
             
+             
+            document.write(s)
+              
            </script>
         
 
             </select>
-            <select id="ddl2" onchange="configureDDL3(document.getElementById('ddl1'), this, document.getElementById('ddl3'))">
-            </select>
-            <select id="ddl3" onchange="display()">
-            </select>  
+           <span id="test1"></span>
+           <span id="test2"></span>
+            
+           
+    
+    
 
 
-        </select>
+       
         <script>
 
 
 
 
             var myNestedVals = menuData
-            var targetElement
            function createOption(ddl, text, value) {
+            
                    var opt = document.createElement('option');
                    opt.value = value;
                    opt.text = text;
                    ddl.options.add(opt);
+                
+                 
                }
            
+           function createL3OutSelect(tenant){
+            console.log(tenant)
+            var k=document.createElement('select');
+                k.id='ddl2'
+
+           k.onchange= function(){
+               console.log(this.value)
+               createExtEPGSelect(tenant,this.value)
+           }
+                   
+                configureDDL2(tenant,k)
+                console.log(k)
+                
+               var test1 = document.getElementById('test1')
+               test1.innerHTML = '';
+               test1.append(k)
+              
+
+              
+                
+           }
+
+           function createExtEPGSelect(tenant,l3out){
+            console.log(tenant)
+            var k2=document.createElement('select');
+                k2.id='ddl3'
+
+           // k.onchange=configureDDL3(tenant, ddl2, ddl3)
+                k2.onchange= function(){
+                console.log(this.value)
+                display(this.value)
+           }   
+                configureDDL3(tenant,l3out,k2)
+                console.log(k2)
+                
+               var test1 = document.getElementById('test2')
+               test1.innerHTML = '';
+               test1.append(k2)
+           }
                function createOptions(optionsArray, ddl) {
+
                    for (i = 0; i < optionsArray.length; i++) {
                        createOption(ddl, optionsArray[i], optionsArray[i]);
                    }
                }
+              
            
-               function configureDDL2(ddl1, ddl2, ddl3) {
-                   ddl2.options.length = 0;
-                   ddl3.options.length = 0;
+               function configureDDL2(tenant, ddl2) {
+                
+                    ddl2.options.length = 0;
+                   //ddl3.options.length = 0;
+                 
                    createOption(ddl2, "Pick L3Out", "");
-                   var ddl2keys = Object.keys(myNestedVals[ddl1.value]);
+                   var ddl2keys = Object.keys(myNestedVals[tenant]);
                    createOptions(ddl2keys, ddl2)
                }
            
-               function configureDDL3(ddl1, ddl2, ddl3) {
-                   ddl3.options.length = 0;
+
+               function configureDDL3(tenant, l3out, ddl3) {
+                    ddl3.options.length = 0;
                    createOption(ddl3, "Pick External EPG", "");
-                   var ddl3keys = myNestedVals[ddl1.value][ddl2.value];
+                   var ddl3keys = myNestedVals[tenant][l3out];
                    createOptions(ddl3keys, ddl3);
                    
                  
@@ -206,9 +256,9 @@
                        //document.getElementById('ext').innerHTML=targetElement      
                }
            
-               function display(){
+               function display(value){
                 
-                 document.getElementById("ext").value = document.getElementById("ddl3").value
+                 document.getElementById("ext").value = value
                }
              
            </script>
@@ -216,22 +266,20 @@
         
         
         
-        
-        
-        
         <div class="subheader">Select Second External EPG From Menu:</div>
-        <select id="ddl11" onchange="configureDDL22(this, document.getElementById('ddl22'), document.getElementById('ddl33'))">
+
+        <select id="ddl11" onchange="createL3OutSelect2(this.value)">
                     
             <option value="">Pick Tenant2</option>
            
     <script>      
  var menuData2={}
-  var extEPG2=$.xResponse('/api/node/class/l3extInstP.json')
-  for (var l=0;l<extEPG2.imdata.length;l++) {
-    var extract2=extEPG2.imdata[l].l3extInstP.attributes.dn.split("/")
-    var l3Ten2 = extract2[1].replace("tn-","")
-    var l3OUT2 = extract2[2].replace("out-","")
-    var l3ExtEPGName2 = extract2[3].replace("instP-","")
+  var extEPG2=$.xResponse('api/node/class/l3extInstP.json')
+  for (var z=0;z<extEPG2.imdata.length;z++) {
+    var extract=extEPG2.imdata[z].l3extInstP.attributes.dn.split("/")
+    var l3Ten2 = extract[1].replace("tn-","")
+    var l3OUT2 = extract[2].replace("out-","")
+    var l3ExtEPGName2 = extract[3].replace("instP-","")
 
 
       
@@ -252,21 +300,109 @@
 
       s2+="<option>"+tenants2[c].toString()+"</option>"
   }
-  document.write(s2)
-      
   
+   
+  document.write(s2)
+    
  </script>
 
 
-    </select>   
+  </select>
+ <span id="test3"></span>
+ <span id="test4"></span>
+  
+ <script>
 
-<select id="ddl22" onchange="configureDDL33(document.getElementById('ddl11'), this, document.getElementById('ddl33'))">
-</select>
-<select id="ddl33" onchange="display2()">
-</select>  
 
 
-          <hr>
+
+    var myNestedVals = menuData2
+   function createOption2(ddl, text, value) {
+    
+           var opt = document.createElement('option');
+           opt.value = value;
+           opt.text = text;
+           ddl.options.add(opt);
+        
+         
+       }
+   
+   function createL3OutSelect2(tenant){
+    console.log(tenant)
+    var k=document.createElement('select');
+        k.id='ddl22'
+
+   k.onchange= function(){
+       console.log(this.value)
+       createExtEPGSelect2(tenant,this.value)
+   }
+           
+        configureDDL22(tenant,k)
+        console.log(k)
+        
+       var test1 = document.getElementById('test3')
+       test1.innerHTML = '';
+       test1.append(k)
+      
+
+      
+        
+   }
+
+   function createExtEPGSelect2(tenant,l3out){
+    console.log(tenant)
+    var k2=document.createElement('select');
+        k2.id='ddl33'
+
+   // k.onchange=configureDDL3(tenant, ddl2, ddl3)
+        k2.onchange= function(){
+        console.log(this.value)
+        display2(this.value)
+   }   
+        configureDDL33(tenant,l3out,k2)
+        console.log(k2)
+        
+       var test1 = document.getElementById('test4')
+       test1.innerHTML = '';
+       test1.append(k2)
+   }
+       function createOptions2(optionsArray, ddl) {
+
+           for (i = 0; i < optionsArray.length; i++) {
+               createOption(ddl, optionsArray[i], optionsArray[i]);
+           }
+       }
+      
+   
+       function configureDDL22(tenant, ddl2) {
+        
+            ddl2.options.length = 0;
+           //ddl3.options.length = 0;
+         
+           createOption2(ddl2, "Pick L3Out", "");
+           var ddl2keys = Object.keys(myNestedVals[tenant]);
+           createOptions2(ddl2keys, ddl2)
+       }
+   
+
+       function configureDDL33(tenant, l3out, ddl3) {
+            ddl3.options.length = 0;
+           createOption2(ddl3, "Pick External EPG", "");
+           var ddl3keys = myNestedVals[tenant][l3out];
+           createOptions2(ddl3keys, ddl3);
+           
+         
+   
+               //document.getElementById('ext').innerHTML=targetElement      
+       }
+   
+       function display2(value){
+        
+         document.getElementById("ext2").value = value
+       }
+     
+   </script>
+ <hr>
 
             <div class="form-group base-margin-bottom">
               <div class="form-group__text">
@@ -290,50 +426,17 @@
     
 
 
-<script>
 
 
 
 
-var myNestedVals2 = menuData2
+      
 
-function createOption2(ddl, text, value) {
-       var opt2 = document.createElement('option');
-       opt2.value = value;
-       opt2.text = text;
-       ddl.options.add(opt2);
-   }
 
-   function createOptions2(optionsArray2, ddl) {
-       for (i = 0; i < optionsArray2.length; i++) {
-           createOption2(ddl, optionsArray2[i], optionsArray2[i]);
-       }
-   }
 
-   function configureDDL22(ddl11, ddl22, ddl33) {
-       ddl22.options.length = 0;
-       ddl33.options.length = 0;
-       createOption2(ddl22, "Pick L3Out2", "");
-       var ddl22keys = Object.keys(myNestedVals2[ddl11.value]);
-       createOptions2(ddl22keys, ddl22)
-   }
 
-   function configureDDL33(ddl11, ddl22, ddl33) {
-       ddl33.options.length = 0;
-       createOption2(ddl33, "Pick External EPG2", "");
-       var ddl33keys = myNestedVals2[ddl11.value][ddl22.value];
-       createOptions2(ddl33keys, ddl33);
-       
-     
 
-           //document.getElementById('ext').innerHTML=targetElement      
-   }
-
-   function display2(){
-    
-     document.getElementById("ext2").value = document.getElementById("ddl33").value
-   }
- 
+      
 </script>
 <script>
 let form = document.getElementById("check");
@@ -343,14 +446,18 @@ var tenant1
 var tenant2
 var getEPG1 = document.getElementById("ext2").value;
 var getEPG2 = document.getElementById("ext").value;
-var extEPG=$.xResponse('/api/node/class/l3extInstP.json')
+var extEPG=$.xResponse('api/node/class/l3extInstP.json')
+var L3one
+var L3two
 for(var p=0;p<extEPG.imdata.length;p++){
     
     if(extEPG.imdata[p].l3extInstP.attributes.name==getEPG1){
-        tenant1=extEPG.imdata[p].l3extInstP.attributes.dn[1]
+        tenant1=extEPG.imdata[p].l3extInstP.attributes.dn.split("/")[1]
+        L3one = extEPG.imdata[p].l3extInstP.attributes.dn.split("/")[2]
     }
     if(extEPG.imdata[p].l3extInstP.attributes.name==getEPG2){
-        tenant2=extEPG.imdata[p].l3extInstP.attributes.dn[1]
+        tenant2=extEPG.imdata[p].l3extInstP.attributes.dn.split("/")[1]
+        L3two = extEPG.imdata[p].l3extInstP.attributes.dn.split("/")[2]
     }
 }
 console.log(tenant2)
@@ -359,7 +466,7 @@ console.log(getEPG2)
 
 
 //get Provider
-var prov = $.xResponse('/api/node/class/fvRsProv.json')
+var prov = $.xResponse('api/node/class/fvRsProv.json')
 var getEPG1ProviderContract =[]
 var ge1P=0            
 var getEPG2ProviderContract = []
@@ -382,7 +489,7 @@ ge2P++
 
 
 //get Consumer
-var consum = $.xResponse('/api/node/class/fvRsCons.json')
+var consum = $.xResponse('api/node/class/fvRsCons.json')
 var getEPG1ConsumerContract = []
 var ge1C=0  
 var getEPG2ConsumerContract = []
@@ -432,9 +539,9 @@ var vRsHG = $.xResponse('api/node/class/vnsRsRedirectHealthGroup.json')
 var svcRedOPstatus = $.xResponse('api/node/class/svcredirDest.json')
 var polConProv= $.xResponse('api/node/class/vnsRsLIfCtxToSvcRedirectPol.json')
 var vRT= $.xResponse('api/node/class/vnsRtRedirectHealthGroup.json')
-var CIf=$.xResponse('/api/node/class/vnsRsCIfAttN.json')
-var faultIns = $.xResponse('/api/node/class/faultInst.json')
-var redGrp = $.xResponse('/api/node/class/svcredirDestGrp.json')
+var CIf=$.xResponse('api/node/class/vnsRsCIfAttN.json')
+var faultIns = $.xResponse('api/node/class/faultInst.json')
+var redGrp = $.xResponse('api/node/class/svcredirDestGrp.json')
 var arrIPtoConProv=[]
 var getThreshold = []
 
@@ -462,353 +569,6 @@ var getThreshold = []
 /* Remove duplicates from array of arrays
 d.filter(( t={}, a=> !(t[a]=a in t) ));
 */
-//get Threshold
-
-for(var f=0;f<(redGrp.imdata).length;f++){
-   
-var getDN = (redGrp.imdata[f].svcredirDestGrp.attributes.dn)
-var ops = (redGrp.imdata[f].svcredirDestGrp.attributes.operSt)
-   
-for(var l=0;l<(faultIns.imdata).length;l++){
-   var lst = ((faultIns.imdata[l].faultInst.attributes.dn).split("/")).slice(0, -1).join("/")
-   
-  
-   if(faultIns.imdata[l].faultInst.attributes.cause == "svcredir-threshold-violated" && getDN==lst && ops=="disabled"){
-       var polTN = redGrp.imdata[f].svcredirDestGrp.attributes.redirPolKey.split("/")[3]
-       getThreshold[l] = [polTN,("Threshold "+"Violated".bold().fontcolor("red")+"<br>")]
-
-
-   }
-
-   }
-}
-
-
-getThreshold = removeWhiteSpaceFromArray(getThreshold)
-getThreshold=getThreshold.filter(( t={}, a=> !(t[a]=a in t) ));
-console.log(getThreshold)
-
-
-
-//Link Service Redirect Policy to consumer/provider and their IP addresses
-for(var v=0;v<(polConProv.imdata).length;v++){
-    var polJ= polConProv.imdata[v].vnsRsLIfCtxToSvcRedirectPol.attributes.tDn.split("/")[3]
-    var conpro=polConProv.imdata[v].vnsRsLIfCtxToSvcRedirectPol.attributes.dn.split("/")[3].replace("lIfCtx-c-","")
-    //console.log(conpro)
-
-    for(var t=0;t<(vRT.imdata).length;t++){
-       var ipp=(vRT.imdata[t].vnsRtRedirectHealthGroup.attributes.tDn.split("/")[4].split("-[")[1]).replace("]","")
-       if(polJ==vRT.imdata[t].vnsRtRedirectHealthGroup.attributes.tDn.split("/")[3]){
-
-          //Put the links in an array
-           arrIPtoConProv[t]=[polJ,conpro,ipp]
-    }
-   }
-}
-
-
-
-
-var cas = []
-//Put arrIPtoConProv in cas
-cas =  removeWhiteSpaceFromArray(arrIPtoConProv)
-
-
-//Link IP address in cas with IP address obtained from svcRedOPstatus and push corresponding opstatus too array
-for(var t=0;t<cas.length;t++){
-for(var rop=0;rop<(svcRedOPstatus.imdata).length;rop++)
-{
-var ipp2 = svcRedOPstatus.imdata[rop].svcredirDest.attributes.ip
-var opStatus = svcRedOPstatus.imdata[rop].svcredirDest.attributes.operSt
-if(cas[t][2]==ipp2){
-
-cas[t][3]=opStatus
-
-}
-}
-}
-
-
-
-
-var connecToDevice3=$.xResponse('api/node/class/vnsRsLIfCtxToLIf.json')
-
-
-var ub = []
-//Get node names and compare them to get ldev
-for(var n=0;n<(connecToDevice3.imdata).length;n++){
-
-var nde2= connecToDevice3.imdata[n].vnsRsLIfCtxToLIf.attributes.dn.split("/")[2].match("-n-(.*)")[0].replace("-n-","")
-
-
-for(var v=0;v<(polConProv.imdata).length;v++){
-    var polG= polConProv.imdata[v].vnsRsLIfCtxToSvcRedirectPol.attributes.tDn.split("/")[3]
-    var nde = polConProv.imdata[v].vnsRsLIfCtxToSvcRedirectPol.attributes.dn.split("/")[2].match("-n-(.*)")[0].replace("-n-","")
-   
-    
-
-
-
-if(nde==nde2){
-   
-   
-   ub[v]=[polG,connecToDevice3.imdata[n].vnsRsLIfCtxToLIf.attributes.tDn.split(/[/]/)[2]]
-
-
-
-}
-   }
-}
-
-
-
-
-//Push ldev which has group of devices to cas by comparing svcredpol
-for(var u=0;u<ub.length;u++){
-for(var t=0;t<cas.length;t++){
-
-   
-   if(ub[u][0]==cas[t][0]){
-   cas[t][4]=ub[u][1]
-   
-   }
-
-
-   }
-}
-
-extraCas = []
-//Push individual devices to cas obtained from vnsRsCIfAttN
-for(var d = 0;d<(CIf.imdata).length;d++){
-for(var t=0;t<cas.length;t++){
-var mtchDev = CIf.imdata[d].vnsRsCIfAttN.attributes.dn.split(/[/]/)[2]
-var devToocas= CIf.imdata[d].vnsRsCIfAttN.attributes.tDn.split(/[/]/)[3].replace("cDev-","")
-if (mtchDev==cas[t][4]){
-extraCas.push(cas[t][0])
-cas[t][5]=devToocas
-
-}
-}
-}
-
-
-//Push Threshold violated groups to cas
-for(var z=0;z<getThreshold.length;z++){
-   
-   for(var l=0;l<cas.length;l++){
-       if(getThreshold[z][0] == cas[l][0]){
-           cas[l][6]=getThreshold[z][1]
-           
-       }
-           //cas[l][6]="Threshold "+"Not Violated".bold().fontcolor("green")+"<br>"
-           
-           
-      
-
-   }
-   
-}
-for(var r=0;r<cas.length;r++){
-
-       if(cas[r].length<6){
-           cas[r][6]="Threshold "+"Not Violated".bold().fontcolor("green")+"<br>"
-
-           
-       }
-    } 
-
-
-//change enable/disable to UP/DOWN
-for(var i=0;i<cas.length;i++){
-   if(cas[i][3]=="enabled"){
-       cas[i][3]="UP".bold().fontcolor("green");
-   }
-   if(cas[i][3]=="disabled"){
-       cas[i][3]="DOWN".bold().fontcolor("red");
-   }
-
-}
-
-
-KBJ1 = []
-KBJ2 = []
-var kbj1=0
-var kbj2=0
-for(var i=0;i<cas.length;i++){
-
-if(cas[i][1]=="provider"){
-
-KBJ1[kbj1] =cas[i][5]+"<br>"+"IP: "+cas[i][2].bold()+" &nbsp is &nbsp "+ cas[i][3]+"<br>"
-kbj1++
-} 
-if(cas[i][1]=="consumer"){
-KBJ2[kbj2]= cas[i][5]+"<br>"+"IP: "+cas[i][2].bold()+" &nbsp is &nbsp "+ cas[i][3]+"<br>"
-kbj2++
-}
-}
-console.log(cas)
-console.log(KBJ1)
-console.log(KBJ2)
-
-
-
-
-
-//Extract Single Device with one leg
-
-var vr = cas.slice()
-for(var r=0;r<vr.length;r++){
-   
-for(var j=1;j<vr.length;j++){
-   
-   if(vr[r][5]==vr[j][5]){
-       vr[r] = []
-   }
-}
-}
-
-//remove empty arrays from vr
-var remvr = vr.filter((array) => array.length);
-
-let KBJ = new Map()
-
-for(var i=0;i<remvr.length;i++){
-KBJ.set(remvr[i][5],("IP: "+remvr[i][2].bold()+" &nbsp is &nbsp "+ remvr[i][3]+"<br>"))
-} 
-
-var ll=[""]
-
-
-
-var pp=[]
-
-
-//Extract Single Device with two legs
-
-for(var i=0;i<KBJ1.length;i++){
-   for(var j=0;j<KBJ2.length;j++){
-       var k=KBJ1[i].split("<br>")
-       var k2=KBJ2[j].split("<br>")
-       if(k[0] == k2[0])
-       {   
-           KBJ.set(k[0],(k[1]+k[2]+"&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"+k2[1]+k2[2]+"<br>"))
-           pp[j]=[k[0]]
-           
-       }
-     
-
-
-}
-}
-console.log(pp)
-
-
-
-
-//Extract multiple Devices in a cluster with two legs
-var kj1=0
-var kj2=0
-var KB1 = []
-var KB2 =[]
-for(var i=0;i<cas.length;i++){
-
-if(cas[i][1]=="provider"){
-
-KB1[kj1] =cas[i][5]+"<br>"+"IP: "+cas[i][2].bold()+" &nbsp is &nbsp "+ cas[i][3]+"<br>"+"\n"+cas[i][6]
-kj1++
-} 
-if(cas[i][1]=="consumer"){
-KB2[kj2]= cas[i][5]+"<br>"+"IP: "+cas[i][2].bold()+" &nbsp is &nbsp "+ cas[i][3]+"<br>"+"\n"+cas[i][6]
-kj2++
-}
-}
-
-console.log(KB1)
-
-
-
-var z=0
-let separate = new Map()
-keeptrack=[]
-for(var i=0;i<pp.length;i++){
-   for(var k=1;k<pp.length;pp++)
-   if(pp[i][0]==pp[k][0]){
-       keeptrack[i]=pp[i]
-   }
-}
-  
-console.log(keeptrack)
-let prvdr = new Map()
-
-for(var t=0;t<keeptrack.length;t++){
-   for(var d=0;d<KB1.length;d++){
-var r=KB1[d].split("<br>")
-
-if(keeptrack[t]==r[0]){
-    prvdr.set(r[1]+r[2]+r[3],keeptrack[t])
-}
-}
-}
-console.log(prvdr)
-
-let cnmr = new Map()
-for(var t=0;t<keeptrack.length;t++){
-   for(var r=0;r<KB2.length;r++){
-var r2=KB2[r].split("<br>")
-
-if(keeptrack[t]==r2[0]){
-    cnmr.set(r2[1]+r2[2]+r2[3],keeptrack[t])
-}
-}
-}
-console.log(cnmr) 
-
-
-
-let total = new Map()
-
-
-var x =0
-var temp1
-var v1
-var v2
-var sz = prvdr.size
-for(var n=0;n<keeptrack.length;n++){
-for(var t=0;t<sz;t++){
-    for(let [key1,val1] of prvdr){
-        temp1 = key1.split("\n")[1]
-        if(val1==keeptrack[n]){
-        k1 = key1.split("\n")[0]
-       prvdr.delete(key1)
-        if(prvdr.size==0){
-            console.log("1")
-            
-        }
-            
-        break;
-}
-
-}
-
-for(let [key2,val2] of cnmr){
-    temp2 = key2.split("\n")[1]
-    if(val2==keeptrack[n]){
-    k2=key2.split("\n")[0];
-    cnmr.delete(key2)
-    if(cnmr.size==0){
-            k2=k2+"\n"+temp1+"&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"+temp2
-        }
-    break;
-}
-}
-ll[x]=(k1+"&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"+k2+"\n")
-x++
-
-}
-total.set(keeptrack[n][0],ll)
-}
-console.log(total)
-
 
 for(var vRs=0;vRs<(vRsHG.imdata).length;vRs++){
 
@@ -1067,7 +827,7 @@ for(clust=0;clust<(clusters.imdata).length;clust++)
 var clustDivide=(clusters.imdata[clust].vnsRsCIfPathAtt.attributes.dn).split(/[/]/)
 
 //removes duplicates in keys and gets values that is 
-myMap.set(clustDivide[3],clustDivide[2])
+myMap.set(clustDivide[3].replace("cDev-",""),clustDivide[2])
 }
 
 for(var k=0;k<myMap.size;k++)
@@ -1189,6 +949,389 @@ iv++
 
 
 
+//get Threshold
+
+for(var f=0;f<(redGrp.imdata).length;f++){
+   
+var getDN = (redGrp.imdata[f].svcredirDestGrp.attributes.dn)
+var ops = (redGrp.imdata[f].svcredirDestGrp.attributes.operSt)
+   
+for(var l=0;l<(faultIns.imdata).length;l++){
+   var lst = ((faultIns.imdata[l].faultInst.attributes.dn).split("/")).slice(0, -1).join("/")
+   
+  
+   if(faultIns.imdata[l].faultInst.attributes.cause == "svcredir-threshold-violated" && getDN==lst && ops=="disabled"){
+       var polTN = redGrp.imdata[f].svcredirDestGrp.attributes.redirPolKey.split("/")[3]
+       getThreshold[l] = [polTN,("Threshold "+"Violated".bold().fontcolor("red")+"<br>")]
+
+
+   }
+
+   }
+}
+
+
+getThreshold = removeWhiteSpaceFromArray(getThreshold)
+getThreshold=getThreshold.filter(( t={}, a=> !(t[a]=a in t) ));
+console.log(getThreshold)
+
+
+
+//Link Service Redirect Policy to consumer/provider and their IP addresses
+for(var v=0;v<(polConProv.imdata).length;v++){
+    var polJ= polConProv.imdata[v].vnsRsLIfCtxToSvcRedirectPol.attributes.tDn.split("/")[3]
+    var conpro=polConProv.imdata[v].vnsRsLIfCtxToSvcRedirectPol.attributes.dn.split("/")[3].replace("lIfCtx-c-","")
+    //console.log(conpro)
+
+    for(var t=0;t<(vRT.imdata).length;t++){
+       var ipp=(vRT.imdata[t].vnsRtRedirectHealthGroup.attributes.tDn.split("/")[4].split("-[")[1]).replace("]","")
+       if(polJ==vRT.imdata[t].vnsRtRedirectHealthGroup.attributes.tDn.split("/")[3]){
+
+          //Put the links in an array
+           arrIPtoConProv[t]=[polJ,conpro,ipp]
+    }
+   }
+}
+
+
+
+
+var cas = []
+//Put arrIPtoConProv in cas
+cas =  removeWhiteSpaceFromArray(arrIPtoConProv)
+
+
+//Link IP address in cas with IP address obtained from svcRedOPstatus and push corresponding opstatus too array
+for(var t=0;t<cas.length;t++){
+for(var rop=0;rop<(svcRedOPstatus.imdata).length;rop++)
+{
+var ipp2 = svcRedOPstatus.imdata[rop].svcredirDest.attributes.ip
+var opStatus = svcRedOPstatus.imdata[rop].svcredirDest.attributes.operSt
+if(cas[t][2]==ipp2){
+
+cas[t][3]=opStatus
+
+}
+}
+}
+
+
+
+
+var connecToDevice3=$.xResponse('api/node/class/vnsRsLIfCtxToLIf.json')
+
+
+var ub = []
+//Get node names and compare them to get ldev
+for(var n=0;n<(connecToDevice3.imdata).length;n++){
+
+var nde2= connecToDevice3.imdata[n].vnsRsLIfCtxToLIf.attributes.dn.split("/")[2].match("-n-(.*)")[0].replace("-n-","")
+
+
+for(var v=0;v<(polConProv.imdata).length;v++){
+    var polG= polConProv.imdata[v].vnsRsLIfCtxToSvcRedirectPol.attributes.tDn.split("/")[3]
+    var nde = polConProv.imdata[v].vnsRsLIfCtxToSvcRedirectPol.attributes.dn.split("/")[2].match("-n-(.*)")[0].replace("-n-","")
+   
+    
+
+
+
+if(nde==nde2){
+   
+   
+   ub[v]=[polG,connecToDevice3.imdata[n].vnsRsLIfCtxToLIf.attributes.tDn.split(/[/]/)[2]]
+
+
+
+}
+   }
+}
+
+
+
+
+//Push ldev which has group of devices to cas by comparing svcredpol
+for(var u=0;u<ub.length;u++){
+for(var t=0;t<cas.length;t++){
+
+   
+   if(ub[u][0]==cas[t][0]){
+   cas[t][4]=ub[u][1]
+   
+   }
+
+
+   }
+}
+
+extraCas = []
+//Push individual devices to cas obtained from vnsRsCIfAttN
+for(var d = 0;d<(CIf.imdata).length;d++){
+for(var t=0;t<cas.length;t++){
+var mtchDev = CIf.imdata[d].vnsRsCIfAttN.attributes.dn.split(/[/]/)[2]
+var devToocas= CIf.imdata[d].vnsRsCIfAttN.attributes.tDn.split(/[/]/)[3].replace("cDev-","")
+if (mtchDev==cas[t][4]){
+extraCas.push(cas[t][0])
+cas[t][5]=devToocas
+
+}
+}
+}
+
+
+//Push Threshold violated groups to cas
+for(var z=0;z<getThreshold.length;z++){
+   
+   for(var l=0;l<cas.length;l++){
+       if(getThreshold[z][0] == cas[l][0]){
+           cas[l][6]=getThreshold[z][1]
+           
+       }
+           //cas[l][6]="Threshold "+"Not Violated".bold().fontcolor("green")+"<br>"
+           
+           
+      
+
+   }
+   
+}
+for(var r=0;r<cas.length;r++){
+
+       if(cas[r].length<7){
+           cas[r][6]="Threshold "+"Not Violated".bold().fontcolor("green")+"<br>"
+
+           
+       }
+    } 
+
+    cas.sort(sortFunction);
+
+function sortFunction(a, b) {
+    if (a[2] === b[2]) {
+        return 0;
+    }
+    else {
+        return (a[2] < b[2]) ? -1 : 1;
+    }
+}
+
+
+console.log("cas Sorted")
+console.log(cas)    
+
+
+//change enable/disable to UP/DOWN
+for(var i=0;i<cas.length;i++){
+   if(cas[i][3]=="enabled"){
+       cas[i][3]="UP".bold().fontcolor("green");
+   }
+   if(cas[i][3]=="disabled"){
+       cas[i][3]="DOWN".bold().fontcolor("red");
+   }
+
+}
+
+
+KBJ1 = []
+KBJ2 = []
+var kbj1=0
+var kbj2=0
+for(var i=0;i<cas.length;i++){
+
+if(cas[i][1]=="provider"){
+
+KBJ1[kbj1] =cas[i][5]+"<br>"+"IP: "+cas[i][2].bold()+" &nbsp is &nbsp "+ cas[i][3]+"<br>"
+kbj1++
+} 
+if(cas[i][1]=="consumer"){
+KBJ2[kbj2]= cas[i][5]+"<br>"+"IP: "+cas[i][2].bold()+" &nbsp is &nbsp "+ cas[i][3]+"<br>"
+kbj2++
+}
+}
+console.log(cas)
+console.log(KBJ1)
+console.log(KBJ2)
+
+
+
+
+
+//Extract Single Device with one leg
+
+var vr = cas.slice()
+for(var r=0;r<vr.length;r++){
+   
+for(var j=1;j<vr.length;j++){
+   
+   if(vr[r][5]==vr[j][5]){
+       vr[r] = []
+   }
+}
+}
+
+//remove empty arrays from vr
+var remvr = vr.filter((array) => array.length);
+
+let KBJ = new Map()
+
+for(var i=0;i<remvr.length;i++){
+KBJ.set(remvr[i][5],("IP: "+remvr[i][2].bold()+" &nbsp is &nbsp "+ remvr[i][3]+"<br>"))
+} 
+
+var ll=[""]
+
+
+
+var pp=[]
+
+
+//Extract Single Device with two legs
+
+for(var i=0;i<KBJ1.length;i++){
+   for(var j=0;j<KBJ2.length;j++){
+       var k=KBJ1[i].split("<br>")
+       var k2=KBJ2[j].split("<br>")
+       if(k[0] == k2[0])
+       {   
+           KBJ.set(k[0],(k[1]+k[2]+"&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"+k2[1]+k2[2]+"<br>"))
+           pp[j]=[k[0]]
+           
+       }
+     
+
+
+}
+}
+console.log(pp)
+
+
+
+
+//Extract multiple Devices in a cluster with two legs
+var kj1=0
+var kj2=0
+var KB1 = []
+var KB2 =[]
+for(var i=0;i<cas.length;i++){
+
+if(cas[i][1]=="provider"){
+
+KB1[kj1] =cas[i][5]+"<br>"+"IP: "+cas[i][2].bold()+" &nbsp is &nbsp "+ cas[i][3]+"<br>"+"\n"+cas[i][6]
+kj1++
+} 
+if(cas[i][1]=="consumer"){
+KB2[kj2]= cas[i][5]+"<br>"+"IP: "+cas[i][2].bold()+" &nbsp is &nbsp "+ cas[i][3]+"<br>"+"\n"+cas[i][6]
+kj2++
+}
+}
+
+console.log(KB1)
+
+
+
+var z=0
+let separate = new Map()
+keeptrack=[]
+for(var i=0;i<pp.length;i++){
+   for(var k=1;k<pp.length;pp++)
+   if(pp[i][0]==pp[k][0]){
+       keeptrack[i]=pp[i]
+   }
+}
+  
+console.log(keeptrack)
+let prvdr = new Map()
+
+for(var t=0;t<keeptrack.length;t++){
+   for(var d=0;d<KB1.length;d++){
+var r=KB1[d].split("<br>")
+
+if(keeptrack[t]==r[0]){
+    prvdr.set(r[1]+r[2]+r[3],keeptrack[t])
+}
+}
+}
+console.log(prvdr)
+
+let cnmr = new Map()
+for(var t=0;t<keeptrack.length;t++){
+   for(var r=0;r<KB2.length;r++){
+var r2=KB2[r].split("<br>")
+
+if(keeptrack[t]==r2[0]){
+    cnmr.set(r2[1]+r2[2]+r2[3],keeptrack[t])
+}
+}
+}
+console.log(cnmr) 
+
+
+
+let total = new Map()
+
+
+var x =0
+var temp1
+var v1
+var v2
+var sz = prvdr.size
+for(var n=0;n<keeptrack.length;n++){
+for(var t=0;t<sz;t++){
+    for(let [key1,val1] of prvdr){
+        temp1 = key1.split("\n")[1]
+        if(val1==keeptrack[n]){
+        k1 = key1.split("\n")[0]
+       prvdr.delete(key1)
+        if(prvdr.size==0){
+            console.log("1")
+            
+        }
+            
+        break;
+}
+
+}
+
+for(let [key2,val2] of cnmr){
+    temp2 = key2.split("\n")[1]
+    if(val2==keeptrack[n]){
+    k2=key2.split("\n")[0];
+    cnmr.delete(key2)
+    if(cnmr.size==0){
+            k2=k2+"\n"+temp1+"&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"+temp2
+        }
+    break;
+}
+}
+ll[x]=(k1+"&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp"+k2+"\n")
+x++
+
+}
+console.log(ll)
+console.log(keeptrack[n][0])
+
+for(var g=0;g<group.length;g++){
+    for(var g2=0;g2<group[g].length;g2++){
+        if(group[g][g2] == keeptrack[n][0]){
+            continue
+        }
+        else{
+            total.set(group[g][g2],ll)
+        }
+    }
+
+}
+
+total.set(keeptrack[n][0],ll)
+
+}
+
+
+
+
+
+
+
 var filt = $.xResponse('api/node/class/vzRsSubjFiltAtt.json')
 
 
@@ -1209,6 +1352,7 @@ var connectionToDev2=$.xResponse('api/node/class/vnsRtNodeToLDev.json')
 
 var nodes = []
             var links= []
+            var lines = []
             var buffer1 
             var buffer2
             var getSubj
@@ -1275,6 +1419,7 @@ var nodes = []
             var sbjCons
             var ite=0
             var counter =0
+            var  yposLine=0
             
             //Map Consumer and Provider to the Contract
             
@@ -1314,51 +1459,38 @@ var nodes = []
 
                getCont=[]
                getCont=getCont1.concat(getCont2)
-               getCont = removeWhiteSpaceFromArray(getCont)
+               //getCont = removeWhiteSpaceFromArray(getCont)
+               getCont = removeDuplicatesFromOneArray(getCont)
+               if(getCont.length==0){
+                swal("No Contract Found!");
+
+
+               
+               }
                 console.log(getCont)
 
             for(var x=0;x<getCont.length;x++)
             {
                 
                ypos+=200
+               yposLine+=225
                
 
 
 
               
-            if(isInArray(getCont[x],getCont1)){
-              sbjProv= "tenant: "+tenant1.replace("tn-","")
-              sbjCons= "tenant: "+tenant2.replace("tn-","")
+               if(isInArray(getCont[x],getCont1) && !(isInArray(getCont[x],getCont2))){
+              sbjProv= "tenant: "+tenant1.replace("tn-","")+"<br>"+"L3Out: "+L3one.replace("out-","")
+              sbjCons= "tenant: "+tenant2.replace("tn-","")+"<br>"+"L3Out: "+L3two.replace("out-","")
               nodes =nodes.concat([
-            {name:getEPG1.replace("epg-","Provider: "),id:1,IPS:sbjProv,fx:500,fy:ypos},
-            {name:getEPG2.replace("epg-","Consumer: "),id:1,IPS:sbjCons,fx:900,fy:ypos},
+            {name:"Provider: "+getEPG1,id:1,IPS:sbjProv,fx:500,fy:ypos},
+            {name:"Consumer: "+getEPG2.replace("epg-","Consumer: "),id:1,IPS:sbjCons,fx:900,fy:ypos},
             {name:getCont[x].replace("brc-","Contract: "),id:2,IPS:"contract",fx:700,fy:ypos},
            
             
             
             ])
-            
-            
-               }
-            
-
-            if(isInArray(getCont[x],getCont2)){
-              sbjProv= "tenant: "+tenant2.replace("tn-","")
-              sbjCons= "tenant: "+tenant1.replace("tn-","")
-              nodes =nodes.concat([
-            {name:getEPG2.replace("epg-","Provider: "),id:1,IPS:sbjProv,fx:500,fy:ypos},
-            {name:getEPG1.replace("epg-","Consumer: "),id:1,IPS:sbjCons,fx:900,fy:ypos},
-            {name:getCont[x].replace("brc-","Contract: "),id:2,IPS:"contract",fx:700,fy:ypos},
-           
-            
-            
-            ])
-            
-               }
-
-           
-           
-            
+             
             links=links.concat( [
             {source:s, target: t},
             {source: s++, target: t++},
@@ -1368,6 +1500,52 @@ var nodes = []
             ] )
            
           
+            
+            
+               }
+            
+
+               if(isInArray(getCont[x],getCont2) && !(isInArray(getCont[x],getCont1))){
+              sbjProv= "tenant: "+tenant2.replace("tn-","")+"<br>"+"L3Out: "+L3two.replace("out-","")
+              sbjCons= "tenant: "+tenant1.replace("tn-","")+"<br>"+"L3Out: "+L3one.replace("out-","")
+              nodes =nodes.concat([
+            {name:"Provider: "+getEPG2,id:1,IPS:sbjProv,fx:500,fy:ypos},
+            {name:"Consumer: "+getEPG1.replace("epg-","Consumer: "),id:1,IPS:sbjCons,fx:900,fy:ypos},
+            {name:getCont[x].replace("brc-","Contract: "),id:2,IPS:"contract",fx:700,fy:ypos},
+           
+            
+            
+            ])
+             
+            links=links.concat( [
+            {source:s, target: t},
+            {source: s++, target: t++},
+            
+            
+           
+            ] )
+           
+          
+            
+               }
+
+               if(isInArray(getCont[x],getCont2) && (isInArray(getCont[x],getCont1))){  
+                sbjProv= "tenant: "+tenant1.replace("tn-","")+"<br>"+"L3Out: "+L3one.replace("out-","")
+              sbjCons= "tenant: "+tenant2.replace("tn-","")+"<br>"+"L3Out: "+L3two.replace("out-","")
+              nodes =nodes.concat([
+            {name:"Provider: "+getEPG1,id:1,IPS:sbjProv,fx:500,fy:ypos},
+            {name:"Consumer: "+getEPG2.replace("epg-","Consumer: "),id:1,IPS:sbjCons,fx:900,fy:ypos},
+            {name:getCont[x].replace("brc-","Contract: "),id:2,IPS:"contract",fx:700,fy:ypos},
+            ] )
+            links=links.concat( [
+            {source:s, target: t},
+            {source: s++, target: t++},
+            
+            
+           
+            ] )
+               }
+           
             t2=0
             ctr = 1
             nodeCtr+= 3
@@ -1706,7 +1884,8 @@ var nodes = []
           
          //filteredDummy=null
             
-          ypos+=100
+          ypos+=300
+          yposLine += 300
           counter++
           
            
@@ -1736,8 +1915,10 @@ var nodes = []
       
  
  
-        
-           }
+        lines = lines.concat([ { "x": 1,   "y": yposLine}, { "x": 1500,   "y": yposLine},
+                                    { "x": 1500,   "y": yposLine}, { "x": 1,   "y": yposLine}])
+            }
+           
            
            
     //Map Consumer and Provider to the Contract
@@ -1773,7 +1954,7 @@ var nodes = []
                    .attr("height", height)
                  .append("g")
                    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-            
+                   d3.select("svg").remove(); 
             var svg = d3.select("body").append("svg")
             .attr("width", width)
             //.attr("style", "outline: thin solid red;")
@@ -1842,7 +2023,18 @@ var nodes = []
             .append("svg:path")
             .attr("d", "M0,-5L10,0L0,5");
            
+            var line = d3.line()
+            .x(function(d) { return d.x;  })
+            .y(function(d) { return d.y;  })
+                
             
+            svg.append("path")
+                            .attr("d", line(lines))
+                            .attr("stroke", "lightblue")
+                            .attr("stroke-width", 2)
+                            .attr("fill", "none")
+                            .attr("opacity",5)
+                            
             
             
             var link = svg.selectAll('.link')
@@ -2051,6 +2243,29 @@ var nodes = []
             //link.attr("class", function(d) { return "link "+ d.source});
             
            
+            link.on("mouseover", function(d) {
+            hovercard.transition()
+            .duration(500)
+            .style("opacity", 1);
+            
+           
+          
+            hovercard.html(d.IPS)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY) + "px");
+            
+           
+            });
+           
+            
+            
+           link.on("mouseout", function(d) {
+           
+           hovercard.transition()
+            .duration(500)
+            .style("opacity", 0);
+           });
+           
             
             
            
@@ -2098,7 +2313,7 @@ var nodes = []
             function myFunc2(){
             ypos=ypos+increY
             
-            
+            yposLine = yposLine + increY
             
             
            
@@ -2108,7 +2323,7 @@ var nodes = []
             
             b=ypos
             t=t+1
-            links= links.concat({source:s,target:t})
+            links= links.concat({source:s,target:t,IPS:SG[counter].toString()})
             
             for(var k=0;k<filteredDummy.length;k++)
             {
@@ -2124,7 +2339,7 @@ var nodes = []
             
            s++
            t++
-           links= links.concat({source:s,target:t,id1:"ok",id2:"noo"})
+           links= links.concat({source:s,target:t,IPS:SG[counter].toString()})
            
            //console.log("single")
            //console.log(s)
@@ -2139,7 +2354,7 @@ var nodes = []
             if(filteredDummy[k].length>1){
             
             for(var p=0;p<filteredDummy[k].length;p++){
-            
+                filteredDummy[k].sort()
             nodes = nodes.concat([{name2:filteredDummy[k][p],id:deviceToSvc.get(filteredDummy[k][p].toString()),id2:total.get(filteredDummy[k][p]),fx:xpos,fy:b}])
             b+=45
             nodeCtr++
@@ -2149,7 +2364,7 @@ var nodes = []
             s++ 
             t+=filteredDummy[k].length
             
-            links= links.concat({source:s,target:t})
+            links= links.concat({source:s,target:t,IPS:SG[counter].toString()})
             s = t -1
             t = s + 1
            //console.log("double")
